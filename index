@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Coal Business Development - Execution Dashboard</title>
+<style>
+  :root{
+    --navy-900:#0a1e3d;
+    --navy-800:#0f2a52;
+    --navy-700:#153a6b;
+    --blue-600:#1d5fb8;
+    --blue-500:#2f7de0;
+    --amber:#f2a71b;
+    --green:#1a9c6b;
+    --red:#d6483f;
+    --purple:#6c4fd6;
+    --bg-page:#eef1f6;
+    --card-bg:#ffffff;
+    --border:#e1e5ec;
+    --text-1:#111827;
+    --text-2:#5b6472;
+    --text-3:#8a92a0;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    font-family:'Segoe UI',Arial,sans-serif;
+    background:var(--bg-page);
+    color:var(--text-1);
+  }
+  .app{display:flex;min-height:100vh;}
+
+  /* SIDEBAR */
+  .sidebar{
+    width:250px;flex-shrink:0;
+    background:var(--navy-900);
+    color:#cdd6e6;
+    display:flex;flex-direction:column;
+  }
+  .brand{
+    display:flex;align-items:center;gap:10px;
+    padding:18px 16px;
+    border-bottom:1px solid rgba(255,255,255,0.08);
+  }
+  .brand-mark{
+    width:38px;height:38px;border-radius:8px;
+    background:linear-gradient(135deg,#f2c94c,#f2994a);
+    display:flex;align-items:center;justify-content:center;
+    font-weight:700;color:#0a1e3d;font-size:15px;
+  }
+  .brand-text .t1{font-size:13px;font-weight:700;color:#fff;line-height:1.3;}
+  .brand-text .t2{font-size:10.5px;color:#9fb0cc;}
+  .nav-section{padding:16px 14px 6px;font-size:10.5px;letter-spacing:1px;color:#6f7fa0;font-weight:600;}
+  .nav-item{
+    display:flex;align-items:center;gap:10px;
+    margin:2px 10px;padding:9px 12px;border-radius:8px;
+    font-size:13px;color:#c3ccdc;cursor:pointer;
+    border:none;background:transparent;width:calc(100% - 20px);text-align:left;
+  }
+  .nav-item:hover{background:rgba(255,255,255,0.06);}
+  .nav-item.active{background:var(--blue-600);color:#fff;font-weight:600;}
+  .nav-icon{width:18px;text-align:center;font-size:13px;}
+  .sidebar-foot{
+    margin-top:auto;padding:14px 16px;font-size:11px;color:#7c8bab;
+    border-top:1px solid rgba(255,255,255,0.08);line-height:1.5;
+  }
+
+  /* MAIN */
+  .main{flex:1;display:flex;flex-direction:column;min-width:0;}
+  .topbar{
+    background:linear-gradient(90deg,var(--navy-900),var(--navy-700));
+    color:#fff;padding:14px 28px;
+    display:flex;align-items:center;justify-content:space-between;
+  }
+  .topbar .label{font-size:10.5px;letter-spacing:2px;color:#9fb0cc;}
+  .topbar .title{font-size:17px;font-weight:700;margin-top:2px;}
+  .topbar-right{display:flex;align-items:center;gap:12px;}
+  .pill{
+    display:flex;align-items:center;gap:6px;
+    background:rgba(255,255,255,0.08);
+    border:1px solid rgba(255,255,255,0.14);
+    padding:6px 12px;border-radius:20px;font-size:12px;
+  }
+  .dot{width:7px;height:7px;border-radius:50%;background:#3ddc84;}
+  .clock{font-size:11px;color:#c3ccdc;text-align:right;line-height:1.4;}
+
+  .content{padding:22px 28px 40px;}
+
+  .page-head{margin-bottom:18px;}
+  .page-head h1{font-size:20px;font-weight:700;}
+  .page-head p{font-size:13px;color:var(--text-2);margin-top:3px;}
+
+  /* METRIC CARDS */
+  .metric-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px;}
+  .metric-card{
+    border-radius:12px;padding:16px 18px;color:#fff;
+    display:flex;flex-direction:column;gap:6px;
+  }
+  .metric-card .m-label{font-size:10.5px;letter-spacing:0.5px;opacity:0.9;font-weight:600;}
+  .metric-card .m-value{font-size:26px;font-weight:700;}
+  .metric-card .m-sub{font-size:11px;opacity:0.85;}
+  .mc-blue{background:linear-gradient(135deg,#1d5fb8,#2f7de0);}
+  .mc-teal{background:linear-gradient(135deg,#0d7a63,#159e83);}
+  .mc-amber{background:linear-gradient(135deg,#d98a0f,#f2a71b);}
+  .mc-green{background:linear-gradient(135deg,#178a5c,#1a9c6b);}
+  .mc-red{background:linear-gradient(135deg,#b8352d,#d6483f);}
+
+  /* GENERIC CARD */
+  .card{
+    background:var(--card-bg);border:1px solid var(--border);
+    border-radius:12px;padding:18px 20px;
+  }
+  .card-head{display:flex;align-items:center;justify-content:between;margin-bottom:14px;}
+  .card-head h3{font-size:14.5px;font-weight:700;}
+  .card-head .sub{font-size:11.5px;color:var(--text-3);margin-top:2px;}
+
+  .grid-2{display:grid;grid-template-columns:1.4fr 1fr;gap:16px;}
+  .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+
+  table{width:100%;border-collapse:collapse;font-size:12.5px;}
+  th{
+    text-align:left;font-size:10.5px;letter-spacing:0.4px;color:var(--text-3);
+    font-weight:700;padding:8px 10px;border-bottom:1px solid var(--border);
+  }
+  td{padding:10px 10px;border-bottom:1px solid var(--border);color:var(--text-1);}
+  tr:last-child td{border-bottom:none;}
+  .badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;}
+  .b-green{background:#e4f6ee;color:#0f7a52;}
+  .b-amber{background:#fdf1dd;color:#a8660a;}
+  .b-red{background:#fbe7e5;color:#b8352d;}
+  .b-blue{background:#e6f0fd;color:#1d5fb8;}
+  .b-gray{background:#eef0f4;color:#5b6472;}
+
+  .bar-wrap{background:#eef0f4;border-radius:6px;height:8px;width:100%;overflow:hidden;}
+  .bar-fill{height:100%;border-radius:6px;}
+
+  /* SLA specific */
+  .sla-legend{display:flex;gap:16px;margin-top:10px;font-size:11.5px;color:var(--text-2);}
+  .legend-dot{width:9px;height:9px;border-radius:2px;display:inline-block;margin-right:5px;}
+
+  .kpi-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:16px;}
+  .kpi-box{border:1px solid var(--border);border-radius:10px;padding:12px 14px;}
+  .kpi-box .k-label{font-size:11px;color:var(--text-3);}
+  .kpi-box .k-value{font-size:20px;font-weight:700;margin-top:4px;}
+  .kpi-box .k-target{font-size:10.5px;color:var(--text-3);margin-top:2px;}
+
+  /* MITRA DB */
+  .mitra-toolbar{display:flex;gap:10px;margin-bottom:16px;align-items:center;}
+  .search{
+    flex:1;border:1px solid var(--border);border-radius:8px;
+    padding:9px 12px;font-size:12.5px;color:var(--text-2);background:#fff;
+  }
+  .filter-chip{
+    border:1px solid var(--border);border-radius:8px;padding:9px 14px;
+    font-size:12.5px;color:var(--text-2);background:#fff;cursor:pointer;
+  }
+  .filter-chip.active{background:var(--navy-900);color:#fff;border-color:var(--navy-900);}
+
+  .mitra-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+  .mitra-card{
+    background:#fff;border:1px solid var(--border);border-radius:12px;
+    padding:18px;cursor:pointer;transition:border-color .15s;
+  }
+  .mitra-card:hover{border-color:var(--blue-500);}
+  .mitra-top{display:flex;justify-content:space-between;align-items:flex-start;}
+  .mitra-code{
+    width:42px;height:42px;border-radius:10px;background:var(--navy-800);color:#fff;
+    display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;
+  }
+  .mitra-name{font-size:14.5px;font-weight:700;margin-top:12px;}
+  .mitra-loc{font-size:11.5px;color:var(--text-3);margin-top:2px;}
+  .mitra-meta{display:flex;justify-content:space-between;margin-top:14px;font-size:11.5px;color:var(--text-2);}
+  .mitra-meta b{color:var(--text-1);}
+  .mitra-foot{
+    margin-top:14px;padding-top:12px;border-top:1px solid var(--border);
+    display:flex;justify-content:space-between;align-items:center;
+  }
+
+  /* DETAIL DD PANEL */
+  .dd-back{
+    display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--blue-600);
+    cursor:pointer;margin-bottom:14px;font-weight:600;
+  }
+  .dd-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:18px;}
+  .dd-title{display:flex;gap:14px;align-items:center;}
+  .dd-code{
+    width:54px;height:54px;border-radius:12px;background:var(--navy-800);color:#fff;
+    display:flex;align-items:center;justify-content:center;font-weight:700;font-size:19px;
+  }
+  .dd-name{font-size:19px;font-weight:700;}
+  .dd-sub{font-size:12px;color:var(--text-3);margin-top:2px;}
+
+  .dd-tabs{display:flex;gap:6px;margin-bottom:16px;border-bottom:1px solid var(--border);}
+  .dd-tab{
+    padding:9px 16px;font-size:12.5px;font-weight:600;color:var(--text-3);
+    cursor:pointer;border-bottom:2px solid transparent;
+  }
+  .dd-tab.active{color:var(--navy-900);border-bottom-color:var(--blue-500);}
+
+  .stage-track{display:flex;align-items:center;margin:6px 0 20px;}
+  .stage{flex:1;text-align:center;position:relative;}
+  .stage .sdot{
+    width:26px;height:26px;border-radius:50%;margin:0 auto 6px;
+    display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:700;
+  }
+  .stage .slabel{font-size:10.5px;color:var(--text-2);font-weight:600;}
+  .stage .sdate{font-size:9.5px;color:var(--text-3);}
+  .stage-line{position:absolute;top:13px;left:-50%;width:100%;height:2px;z-index:-1;}
+
+  .view{display:none;}
+  .view.active{display:block;}
+
+  .doc-row{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:11px 4px;border-bottom:1px solid var(--border);font-size:12.5px;
+  }
+  .doc-row:last-child{border-bottom:none;}
+  .doc-name{display:flex;align-items:center;gap:9px;}
+  .doc-icon{
+    width:28px;height:28px;border-radius:7px;background:#eef0f4;
+    display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--text-2);
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">EPI</div>
+      <div class="brand-text">
+        <div class="t1">PLN Energi Primer<br>Indonesia</div>
+        <div class="t2">Coal Business Development</div>
+      </div>
+    </div>
+    <div class="nav-section">MENU UTAMA</div>
+    <button class="nav-item"><span class="nav-icon">&#8962;</span>Home</button>
+    <div class="nav-section">MENU DASHBOARD</div>
+    <button class="nav-item" id="nav-sla" onclick="showView('sla')"><span class="nav-icon">&#9202;</span>Monitoring SLA</button>
+    <button class="nav-item active" id="nav-mitra" onclick="showView('mitra')"><span class="nav-icon">&#128193;</span>Database Mitra Tambang</button>
+    <button class="nav-item"><span class="nav-icon">&#128203;</span>Action Tracker</button>
+    <button class="nav-item"><span class="nav-icon">&#128200;</span>Prognosa Kinerja</button>
+    <div class="sidebar-foot">
+      Menu Database Mitra Tambang menyimpan profil, legalitas, dan riwayat due diligence tiap mitra. Menu Monitoring SLA melacak progres permintaan due diligence terhadap tenggat waktu.
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <div class="label">DASHBOARD KINERJA &amp; EXECUTION TRACKER</div>
+        <div class="title" id="topbar-title">DATABASE MITRA TAMBANG &middot; DUE DILIGENCE</div>
+      </div>
+      <div class="topbar-right">
+        <div class="pill"><span class="dot"></span>Live Data</div>
+        <div class="clock">15 September 2026<br>23.17 WIB</div>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- ============ VIEW: SLA MONITORING ============ -->
+      <div class="view" id="view-sla">
+        <div class="page-head">
+          <h1>Monitoring SLA due diligence</h1>
+          <p>Melacak progres seluruh permintaan due diligence mitra tambang terhadap tenggat waktu 14 hari kerja</p>
+        </div>
+
+        <div class="metric-row">
+          <div class="metric-card mc-blue">
+            <div class="m-label">TIKET AKTIF</div>
+            <div class="m-value">18</div>
+            <div class="m-sub">sedang berjalan</div>
+          </div>
+          <div class="metric-card mc-green">
+            <div class="m-label">DALAM SLA</div>
+            <div class="m-value">12</div>
+            <div class="m-sub">66,7% dari tiket aktif</div>
+          </div>
+          <div class="metric-card mc-amber">
+            <div class="m-label">MENDEKATI TENGGAT</div>
+            <div class="m-value">4</div>
+            <div class="m-sub">jatuh tempo &lt; 3 hari</div>
+          </div>
+          <div class="metric-card mc-red">
+            <div class="m-label">LEWAT SLA</div>
+            <div class="m-value">2</div>
+            <div class="m-sub">perlu eskalasi</div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-head">
+              <div>
+                <h3>Tiket due diligence berjalan</h3>
+                <div class="sub">Diurutkan berdasarkan sisa waktu SLA</div>
+              </div>
+            </div>
+            <table>
+              <tr>
+                <th>ID Tiket</th><th>Mitra</th><th>Tahapan</th><th>Sisa waktu</th><th>Status</th>
+              </tr>
+              <tr>
+                <td>DD-2609</td><td>Tambang A</td><td>Site visit &amp; sampling</td><td>-2 hari</td>
+                <td><span class="badge b-red">Lewat SLA</span></td>
+              </tr>
+              <tr>
+                <td>DD-2611</td><td>Tambang F</td><td>Penunjukan surveyor</td><td>-1 hari</td>
+                <td><span class="badge b-red">Lewat SLA</span></td>
+              </tr>
+              <tr>
+                <td>DD-2614</td><td>Tambang C</td><td>Draft laporan</td><td>1 hari</td>
+                <td><span class="badge b-amber">Mendekati tenggat</span></td>
+              </tr>
+              <tr>
+                <td>DD-2616</td><td>Tambang H</td><td>Verifikasi kelengkapan</td><td>2 hari</td>
+                <td><span class="badge b-amber">Mendekati tenggat</span></td>
+              </tr>
+              <tr>
+                <td>DD-2618</td><td>Tambang B</td><td>Site visit &amp; sampling</td><td>6 hari</td>
+                <td><span class="badge b-green">Dalam SLA</span></td>
+              </tr>
+              <tr>
+                <td>DD-2620</td><td>Tambang D</td><td>Permintaan</td><td>13 hari</td>
+                <td><span class="badge b-green">Dalam SLA</span></td>
+              </tr>
+            </table>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <h3>Kepatuhan SLA bulanan</h3>
+              <div class="sub">Persentase tiket selesai dalam tenggat</div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:12px;">
+              <div>
+                <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px;"><span>Apr</span><b>58%</b></div>
+                <div class="bar-wrap"><div class="bar-fill" style="width:58%;background:var(--red);"></div></div>
+              </div>
+              <div>
+                <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px;"><span>Mei</span><b>64%</b></div>
+                <div class="bar-wrap"><div class="bar-fill" style="width:64%;background:var(--amber);"></div></div>
+              </div>
+              <div>
+                <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px;"><span>Jun</span><b>71%</b></div>
+                <div class="bar-wrap"><div class="bar-fill" style="width:71%;background:var(--amber);"></div></div>
+              </div>
+              <div>
+                <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px;"><span>Jul</span><b>79%</b></div>
+                <div class="bar-wrap"><div class="bar-fill" style="width:79%;background:var(--blue-500);"></div></div>
+              </div>
+              <div>
+                <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px;"><span>Agu</span><b>85%</b></div>
+                <div class="bar-wrap"><div class="bar-fill" style="width:85%;background:var(--green);"></div></div>
+              </div>
+              <div>
+                <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px;"><span>Sep (mtd)</span><b>89%</b></div>
+                <div class="bar-wrap"><div class="bar-fill" style="width:89%;background:var(--green);"></div></div>
+              </div>
+            </div>
+            <div class="kpi-strip" style="grid-template-columns:1fr 1fr;">
+              <div class="kpi-box">
+                <div class="k-label">Rata-rata cycle time</div>
+                <div class="k-value">16,4 hari</div>
+                <div class="k-target">target &le; 14 hari</div>
+              </div>
+              <div class="kpi-box">
+                <div class="k-label">Target kepatuhan</div>
+                <div class="k-value">&ge; 95%</div>
+                <div class="k-target">akhir Fase 2</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ VIEW: MITRA LIST ============ -->
+      <div class="view active" id="view-mitra">
+        <div class="page-head">
+          <h1>Database mitra tambang</h1>
+          <p>Profil, legalitas, dan riwayat due diligence seluruh mitra tambang batubara Kalimantan</p>
+        </div>
+
+        <div class="metric-row" style="grid-template-columns:repeat(4,1fr);">
+          <div class="metric-card mc-blue"><div class="m-label">TOTAL MITRA</div><div class="m-value">24</div><div class="m-sub">terdaftar aktif</div></div>
+          <div class="metric-card mc-green"><div class="m-label">DD LOLOS</div><div class="m-value">19</div><div class="m-sub">79% dari total</div></div>
+          <div class="metric-card mc-amber"><div class="m-label">DD BERJALAN</div><div class="m-value">3</div><div class="m-sub">proses verifikasi</div></div>
+          <div class="metric-card mc-red"><div class="m-label">PERLU TINDAK LANJUT</div><div class="m-value">2</div><div class="m-sub">temuan belum tuntas</div></div>
+        </div>
+
+        <div class="mitra-toolbar">
+          <input class="search" placeholder="Cari nama mitra atau lokasi tambang">
+          <div class="filter-chip active">Semua</div>
+          <div class="filter-chip">DD lolos</div>
+          <div class="filter-chip">DD berjalan</div>
+          <div class="filter-chip">Perlu tindak lanjut</div>
+        </div>
+
+        <div class="mitra-grid">
+
+          <div class="mitra-card" onclick="showDetail('A')">
+            <div class="mitra-top">
+              <div class="mitra-code">A</div>
+              <span class="badge b-green">DD lolos</span>
+            </div>
+            <div class="mitra-name">Tambang A - PT Bara Kalimantan Jaya</div>
+            <div class="mitra-loc">Kutai Kartanegara, Kalimantan Timur</div>
+            <div class="mitra-meta"><span>Kapasitas</span><b>1,8 juta ton/th</b></div>
+            <div class="mitra-meta"><span>DD terakhir</span><b>12 Agu 2026</b></div>
+            <div class="mitra-foot">
+              <span style="font-size:11.5px;color:var(--text-3);">GCV 4.900 kcal/kg</span>
+              <span style="font-size:12px;color:var(--blue-600);font-weight:600;">Lihat detail &rarr;</span>
+            </div>
+          </div>
+
+          <div class="mitra-card" onclick="showDetail('B')">
+            <div class="mitra-top">
+              <div class="mitra-code">B</div>
+              <span class="badge b-amber">DD berjalan</span>
+            </div>
+            <div class="mitra-name">Tambang B - PT Mitra Sejahtera Coal</div>
+            <div class="mitra-loc">Paser, Kalimantan Timur</div>
+            <div class="mitra-meta"><span>Kapasitas</span><b>1,2 juta ton/th</b></div>
+            <div class="mitra-meta"><span>DD terakhir</span><b>Berjalan - site visit</b></div>
+            <div class="mitra-foot">
+              <span style="font-size:11.5px;color:var(--text-3);">GCV 4.500 kcal/kg</span>
+              <span style="font-size:12px;color:var(--blue-600);font-weight:600;">Lihat detail &rarr;</span>
+            </div>
+          </div>
+
+          <div class="mitra-card" onclick="showDetail('C')">
+            <div class="mitra-top">
+              <div class="mitra-code">C</div>
+              <span class="badge b-red">Perlu tindak lanjut</span>
+            </div>
+            <div class="mitra-name">Tambang C - PT Kalimantan Energi Prima</div>
+            <div class="mitra-loc">Barito Utara, Kalimantan Tengah</div>
+            <div class="mitra-meta"><span>Kapasitas</span><b>0,9 juta ton/th</b></div>
+            <div class="mitra-meta"><span>DD terakhir</span><b>03 Sep 2026</b></div>
+            <div class="mitra-foot">
+              <span style="font-size:11.5px;color:var(--text-3);">Deviasi kualitas ditemukan</span>
+              <span style="font-size:12px;color:var(--blue-600);font-weight:600;">Lihat detail &rarr;</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ============ VIEW: DETAIL DUE DILIGENCE ============ -->
+      <div class="view" id="view-detail">
+        <div class="dd-back" onclick="showView('mitra')">&larr; Kembali ke database mitra</div>
+
+        <div class="dd-header">
+          <div class="dd-title">
+            <div class="dd-code" id="dd-code">A</div>
+            <div>
+              <div class="dd-name" id="dd-name">Tambang A - PT Bara Kalimantan Jaya</div>
+              <div class="dd-sub" id="dd-loc">Kutai Kartanegara, Kalimantan Timur &middot; IUP OP aktif</div>
+            </div>
+          </div>
+          <span class="badge b-green" id="dd-status">DD lolos</span>
+        </div>
+
+        <div class="dd-tabs">
+          <div class="dd-tab active">Ringkasan due diligence</div>
+          <div class="dd-tab">Profil &amp; legalitas</div>
+          <div class="dd-tab">Dokumen</div>
+          <div class="dd-tab">Riwayat pasokan</div>
+        </div>
+
+        <div class="card" style="margin-bottom:16px;">
+          <div class="card-head"><h3>Progres tahapan due diligence</h3></div>
+          <div class="stage-track" id="dd-stages"></div>
+
+          <div class="kpi-strip">
+            <div class="kpi-box">
+              <div class="k-label">Ruang lingkup</div>
+              <div class="k-value" style="font-size:14px;" id="dd-scope">Channel sampling + site visit</div>
+            </div>
+            <div class="kpi-box">
+              <div class="k-label">Surveyor independen</div>
+              <div class="k-value" style="font-size:14px;" id="dd-surveyor">PT Sucofindo</div>
+            </div>
+            <div class="kpi-box">
+              <div class="k-label">Cycle time</div>
+              <div class="k-value" style="font-size:14px;" id="dd-cycle">13 hari (dalam SLA)</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-head">
+              <h3>Temuan &amp; rekomendasi</h3>
+              <div class="sub">Hasil channel sampling dan site visit terakhir</div>
+            </div>
+            <div id="dd-findings" style="font-size:12.5px;line-height:1.8;color:var(--text-2);"></div>
+          </div>
+
+          <div class="card">
+            <div class="card-head"><h3>Dokumen due diligence</h3></div>
+            <div id="dd-docs"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+function showView(name){
+  document.querySelectorAll('.view').forEach(function(v){v.classList.remove('active');});
+  document.getElementById('view-'+name).classList.add('active');
+  document.getElementById('nav-sla').classList.toggle('active', name==='sla');
+  document.getElementById('nav-mitra').classList.toggle('active', name==='mitra' || name==='detail');
+  var titles = {
+    sla: 'MONITORING SLA DUE DILIGENCE',
+    mitra: 'DATABASE MITRA TAMBANG &middot; DUE DILIGENCE',
+    detail: 'DETAIL MITRA &middot; DUE DILIGENCE'
+  };
+  document.getElementById('topbar-title').innerHTML = titles[name];
+}
+
+var mitraData = {
+  A: {
+    name: 'Tambang A - PT Bara Kalimantan Jaya',
+    loc: 'Kutai Kartanegara, Kalimantan Timur &middot; IUP OP aktif',
+    status: 'DD lolos', statusClass: 'b-green',
+    scope: 'Channel sampling + site visit',
+    surveyor: 'PT Sucofindo',
+    cycle: '13 hari (dalam SLA)',
+    stages: [1,1,1,1,1,1],
+    findings: [
+      'Kualitas batubara sesuai kontrak, GCV rata-rata 4.900 kcal/kg dengan deviasi di bawah 1%.',
+      'Legalitas IUP OP dan RKAB 2026 lengkap dan berlaku hingga 2029.',
+      'Realisasi produksi konsisten dengan rencana tiga bulan terakhir.',
+      'Rekomendasi: lanjutkan kontrak pasokan, jadwalkan DD berkala 6 bulan.'
+    ],
+    docs: ['Sertifikat IUP OP', 'Laporan channel sampling', 'Berita acara site visit', 'RKAB 2026']
+  },
+  B: {
+    name: 'Tambang B - PT Mitra Sejahtera Coal',
+    loc: 'Paser, Kalimantan Timur &middot; IUP OP aktif',
+    status: 'DD berjalan', statusClass: 'b-amber',
+    scope: 'Pre-shipment inspection',
+    surveyor: 'PT Geoservices',
+    cycle: 'Hari ke-9 dari 14 hari SLA',
+    stages: [1,1,1,0,0,0],
+    findings: [
+      'Site visit telah dilaksanakan, laporan awal menunjukkan kondisi tambang sesuai izin.',
+      'Menunggu hasil laboratorium untuk verifikasi kualitas GAR 4.200.',
+      'Draft laporan due diligence ditargetkan selesai dalam 2 hari kerja.',
+      'Belum ada temuan signifikan sejauh ini.'
+    ],
+    docs: ['Sertifikat IUP OP', 'Formulir permintaan DD', 'Draft laporan site visit (sementara)']
+  },
+  C: {
+    name: 'Tambang C - PT Kalimantan Energi Prima',
+    loc: 'Barito Utara, Kalimantan Tengah &middot; IUP OP aktif',
+    status: 'Perlu tindak lanjut', statusClass: 'b-red',
+    scope: 'Channel sampling + pre-shipment inspection',
+    surveyor: 'PT Sucofindo',
+    cycle: '18 hari (lewat SLA 4 hari)',
+    stages: [1,1,1,1,1,0],
+    findings: [
+      'Deviasi kualitas ditemukan: GCV aktual 4.300 kcal/kg vs kontrak 4.500 kcal/kg.',
+      'Ash content melebihi batas toleransi pada dua titik sampling.',
+      'Rekomendasi: klarifikasi tertulis ke mitra, tinjau klausul penalti kontrak.',
+      'Laporan final tertahan menunggu tanggapan mitra atas temuan.'
+    ],
+    docs: ['Sertifikat IUP OP', 'Laporan channel sampling', 'Berita acara temuan deviasi', 'Surat klarifikasi ke mitra']
+  }
+};
+
+function showDetail(code){
+  var d = mitraData[code];
+  document.getElementById('dd-code').textContent = code;
+  document.getElementById('dd-name').textContent = d.name;
+  document.getElementById('dd-loc').innerHTML = d.loc;
+  var statusEl = document.getElementById('dd-status');
+  statusEl.textContent = d.status;
+  statusEl.className = 'badge ' + d.statusClass;
+  document.getElementById('dd-scope').textContent = d.scope;
+  document.getElementById('dd-surveyor').textContent = d.surveyor;
+  document.getElementById('dd-cycle').textContent = d.cycle;
+
+  var stageNames = ['Permintaan','Verifikasi','Surveyor','Site visit','Draft laporan','Laporan final'];
+  var track = document.getElementById('dd-stages');
+  track.innerHTML = '';
+  d.stages.forEach(function(done, i){
+    var color = done ? 'var(--green)' : '#c7ccd6';
+    var html = '<div class="stage">';
+    if(i>0){ html += '<div class="stage-line" style="background:'+ (d.stages[i-1] && done ? 'var(--green)' : '#dde1e8') +';"></div>'; }
+    html += '<div class="sdot" style="background:'+color+';">'+(done? '&#10003;' : (i+1))+'</div>';
+    html += '<div class="slabel">'+stageNames[i]+'</div>';
+    html += '</div>';
+    track.innerHTML += html;
+  });
+
+  var findEl = document.getElementById('dd-findings');
+  findEl.innerHTML = '';
+  d.findings.forEach(function(f){
+    findEl.innerHTML += '<div style="display:flex;gap:8px;margin-bottom:8px;"><span style="color:var(--blue-500);">&#8226;</span><span>'+f+'</span></div>';
+  });
+
+  var docEl = document.getElementById('dd-docs');
+  docEl.innerHTML = '';
+  d.docs.forEach(function(doc){
+    docEl.innerHTML += '<div class="doc-row"><div class="doc-name"><div class="doc-icon">&#128196;</div>'+doc+'</div><span class="badge b-blue">Terunggah</span></div>';
+  });
+
+  showView('detail');
+}
+</script>
+</body>
+</html>
